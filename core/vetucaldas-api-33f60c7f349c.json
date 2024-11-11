@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "vetucaldas-api",
+  "private_key_id": "33f60c7f349c4dbb8373fecba777d753c944fbd5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC8UVzRk9cWjbmX\nXJWt0vA3L6hldRr/c7JXrVyfsRipjMb7cvnEjB74bi8SiUFvCkPloB93sVw3ua0Y\nZre1HG4v3QXahHDLh1u0ULZP8nPICns/f1urmW1W5QBkbo1sSZlOFIxzE7hoJU0o\nTUJ1xi/9o1MqeZ8w05UCUc4FiEGak54N4eT5DRqkPRNc1ZEZDb4D8+aZ/3Uh+4P0\nVYWLoYIGr0+Gs5XDj7T1sfbwZtlY0SwlxtUJzXzbE83ALZK+JqLCsHwnv9ajVXy9\nYf2Z+GInrHc+sssqty37YEkIgVb3SYjrySn9KWuiIqKI6hhP2hBWwVx8+i5U2p6Y\nTR416D3TAgMBAAECggEAFDyfajDQ9FjWkNrKMEZyuft3xS9dxLB81x8yIkG4Z2qm\nwhlg7dYrndbOstc9HjRO3OY60Mn7zEvlELI5G6VVJ0pBJB0HYgJxwGF2tgX/8IdF\nJ1WwVt3DT4sxt5k0aWafVYdacHi2CxBhx5WbMWd9e2w0YQ7LefEYGjUK8V1Ab4ku\nHGudZldBwB3svTNrKvnQtGmLvuY4GWLAoL5CBhF4Y3BIqvaL9ellr1g7o6uwLxjC\nGUYSGxCMg/K6DJKpBnPQt9VQvb+F8wXSO8qBbFl+ga5NSnkGf3vV2GyC+3Y0vua0\nr32Q6BAMz3hZLGQgT1XUZ+KvSPJYcylWTE9cgzTXAQKBgQDviiEE1cpV3w4+LV3C\nmK+hGmMonv/Qpy4F8T8T5dlAe7GZ/dN67Lbk9qHZnSTwc87sYZzajmO96zWf1ypY\nkLkeEX5JHAJ65d+qkN6oWbahtckR7cNSgMe97WJSEoZ8co6K9Qr6+KlbOzYFaWAj\nZ/xa21LkiI1gJWRFwoepnah8UQKBgQDJQin7TghpYp0o6ziwm4WHHk/jYWKlwRKI\nQb8zWzXxfeFzBH5Wrb8XaLLaflH1GpQW+wWaSIYQx2CggqyPPoGERMywj0SjqzJb\nwpY9QNROuVjRqLiSbfIm6MfyNkzZ8fIEO61mWwbRUO1E1r5Szg11M6MiIk/eXezX\nzkutf3ti4wKBgF8KrE0x0mU96nXLJD94u36tbJiKda/BFWawMLnhYdDPA0m5R3an\ng23XWaJxUl3BZWGu3UBubK7HK3CvO5MGYRzIDhZN8cH3gUY40s9zQR5qdUwSzYPn\nqtj13iP4S7oG7f2+ekvX68JR/P4qsEV8Fcmq6fnZIFb8nwt6wr8O2fHxAoGAJ+KQ\n51jjmd8NPlq/dWCc6dY8Btf58Nd+kLpW5hqhaiaEU4MEdrEgOcdqCpsWKvkFeDhv\nN9A/oXuhzq2W/RxqFoh7+FGsTLNU25KIq8L5UFCzJXnGel6HquZfGcVhHaAxUl1x\nU+OeSkU7gHT+avKjACMnpVAfe/YpReuAW/XzwfkCgYBGVgI4oFHH3LHNIrQl3wVA\n8PwdNEiOk57g+z0r2E/vjNHTZ6IKWvaaPsitdQptWcWMt3IWw5ARLccnbPz+HHrc\nMycV/VMe16a6yy3Y2OODNcqliulpqglDJ7ME2w70vHkTi3uaprUyi/fvYJdspOui\nIhUr3vqkQbhcct3bdslHKA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "vetucaldas-service-account@vetucaldas-api.iam.gserviceaccount.com",
+  "client_id": "103192330800031630161",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/vetucaldas-service-account%40vetucaldas-api.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
