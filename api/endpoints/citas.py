@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from datetime import datetime
 from schemas.cita import CitaCreate, CitaResponse
-from crud.crud_citas import create_cita, get_disponibilidad
+from crud.crud_citas import create_cita, get_disponibilidad, get_citas_by_contacto
 
 router = APIRouter()
 
@@ -22,3 +22,14 @@ async def obtener_horarios_disponibles(fecha: str):
     except ValueError:
         raise HTTPException(status_code=400, detail="Formato de fecha inválido. Use YYYY-MM-DD.")
 
+@router.get("/citas/{correo}", response_model=list[CitaResponse])
+async def obtener_citas_por_contacto(correo: str, fecha_inicio: str):
+    try:
+        fecha_inicio_dt = datetime.strptime(fecha_inicio, '%Y-%m-%d')
+        citas = get_citas_by_contacto(correo, fecha_inicio_dt)
+        print("fecha_inicio_dt", fecha_inicio_dt, "fecha string", fecha_inicio)
+        return citas
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Formato de fecha inválido. Use YYYY-MM-DD.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

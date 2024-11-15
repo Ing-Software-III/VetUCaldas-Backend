@@ -16,7 +16,7 @@ def obtener_hoja_del_dia(fecha):
         hoja = sheet.worksheet(fecha_str)
     except gspread.exceptions.WorksheetNotFound:
         hoja = sheet.add_worksheet(title=fecha_str, rows="100", cols="10")
-        hoja.append_row(['id_cita', 'nombre_mascota', 'nombre_dueño', 'contacto', 'fecha_hora', 'medico', 'estado'])
+        hoja.append_row(['id_cita', 'nombre_mascota', 'nombre_dueño', 'correo', 'telefono', 'fecha_hora', 'medico', 'estado', 'cedula'])
         
         hora_inicio = datetime.combine(fecha, datetime.strptime("07:00", "%H:%M").time())
         hora_fin = datetime.combine(fecha, datetime.strptime("19:00", "%H:%M").time())
@@ -28,9 +28,9 @@ def obtener_hoja_del_dia(fecha):
         while horario_actual <= hora_fin:
             hoja.append_row([
                 str(id_cita),
-                '', '', '', 
+                '', '', '', '', 
                 horario_actual.strftime('%Y-%m-%d %H:%M:%S'),
-                '', 'disponible'
+                '', 'disponible', ''
             ])
             horario_actual += intervalo
             id_cita += 1
@@ -44,24 +44,28 @@ def agendar_cita(cita: CitaCreate):
     
     for idx, registro in enumerate(registros, start=2):
         if registro['fecha_hora'] == cita.fecha_hora.strftime('%Y-%m-%d %H:%M:%S') and registro['estado'] == 'disponible':
-            hoja.update(f'B{idx}:G{idx}', [
+            hoja.update(f'B{idx}:I{idx}', [
                 [
                     cita.nombre_mascota,
                     cita.nombre_dueño,
-                    cita.contacto,
+                    cita.correo,
+                    cita.telefono,
                     cita.fecha_hora.strftime('%Y-%m-%d %H:%M:%S'),
                     cita.medico,
-                    'confirmada'
+                    'confirmada',
+                    cita.cedula
                 ]
             ])
             return CitaResponse(
                 id_cita=registro['id_cita'],
                 nombre_mascota=cita.nombre_mascota,
                 nombre_dueño=cita.nombre_dueño,
-                contacto=cita.contacto,
+                correo=cita.correo,
+                telefono=cita.telefono,
                 fecha_hora=cita.fecha_hora,
                 medico=cita.medico,
-                estado='confirmada'
+                estado='confirmada',
+                cedula=cita.cedula
             )
     raise Exception("El horario solicitado no está disponible")
 
