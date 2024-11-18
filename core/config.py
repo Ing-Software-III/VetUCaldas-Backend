@@ -1,6 +1,7 @@
-import os
+from pymongo import MongoClient
 
-# Ruta al archivo de credenciales de Google
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GOOGLE_CREDENTIALS_FILE = os.path.join(BASE_DIR, 'core', 'vetucaldas-api-33f60c7f349c.json')
-SPREADSHEET_NAME = 'VetUCaldas_Citas'
+MONGO_DETAILS = "mongodb+srv://albert1701920351:E8T7mtKYhFLbDMXY@cluster-vetucaldas.34etx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster-VetUcaldas"
+
+client = MongoClient(MONGO_DETAILS)
+database = client["vetucaldas"]
+citas_collection = database["citas"]

@@ -1,106 +1,76 @@
 from datetime import datetime, timedelta
 from schemas.cita import CitaCreate, CitaResponse
-from services.google_sheets import obtener_hoja_del_dia
+from core.config import citas_collection
+from bson import ObjectId
 
 def create_cita(cita: CitaCreate) -> CitaResponse:
-    """Crea o actualiza una cita en la hoja del día, en el horario especificado."""
+    """Crea una nueva cita en la base de datos."""
+    # Verifica que el horario de la cita sea válido
     fecha = cita.fecha_hora.date()
-    hoja = obtener_hoja_del_dia(fecha)
+    hora_inicio = datetime.combine(fecha, datetime.strptime("07:00", "%H:%M").time())
+    hora_fin = datetime.combine(fecha, datetime.strptime("19:00", "%H:%M").time())
+    intervalo = timedelta(minutes=20)
     
-    registros = hoja.get_all_records()
+    horario_valido = False
+    horario_actual = hora_inicio
+    while horario_actual <= hora_fin:
+        if cita.fecha_hora == horario_actual:
+            horario_valido = True
+            break
+        horario_actual += intervalo
     
-    # Busca el horario específico y verifica que esté disponible
-    for idx, registro in enumerate(registros, start=2):  # start=2 para ajustar el índice de fila en Google Sheets
-        if registro["fecha_hora"] == cita.fecha_hora.strftime('%Y-%m-%d %H:%M:%S') and registro["estado"] == "disponible":
-            # Actualiza la fila correspondiente con los datos de la cita
-            hoja.update(f'B{idx}:I{idx}', [
-                [
-                    cita.nombre_mascota,
-                    cita.nombre_dueño,
-                    cita.correo,
-                    cita.telefono,
-                    cita.fecha_hora.strftime('%Y-%m-%d %H:%M:%S'),
-                    cita.medico,
-                    "confirmada",
-                    cita.cedula
-                ]
-            ])
-            return CitaResponse(
-                id_cita=registro["id_cita"],
-                nombre_mascota=cita.nombre_mascota,
-                nombre_dueño=cita.nombre_dueño,
-                correo=cita.correo,
-                telefono=cita.telefono,
-                fecha_hora=cita.fecha_hora,
-                medico=cita.medico,
-                estado="confirmada",
-                cedula=cita.cedula
-            )
+    if not horario_valido:
+        raise Exception("El horario de la cita no es válido. Debe ser entre 7 am y 7 pm con intervalos de 20 minutos.")
     
-    # Si no encuentra el horario disponible, lanza una excepción
-    raise Exception("El horario solicitado no está disponible")
+    # Verifica que el horario de la cita esté disponible
+    cita_existente = citas_collection.find_one({"fecha_hora": cita.fecha_hora})
+    if cita_existente:
+        raise Exception("El horario de la cita ya está ocupado.")
+    
+    # Crea la cita
+    cita_dict = cita.dict()
+    cita_dict["estado"] = "confirmada"
+    result = citas_collection.insert_one(cita_dict)
+    cita_dict["id"] = str(result.inserted_id)
+    return CitaResponse(**cita_dict)
 
 def get_disponibilidad(fecha: datetime):
     """Obtiene la disponibilidad de horarios en una fecha específica."""
-    hoja = obtener_hoja_del_dia(fecha)
-    registros = hoja.get_all_records()
-    disponibilidad = [
-        {
-            "fecha_hora": registro["fecha_hora"],
-            "medico": registro["medico"]
-        }
-        for registro in registros if registro["estado"] == "disponible"
-    ]
+    # Genera todos los horarios posibles en el rango de 7 am a 7 pm con intervalos de 20 minutos
+    horarios_disponibles = []
+    hora_inicio = fecha.replace(hour=7, minute=0, second=0, microsecond=0)
+    hora_fin = fecha.replace(hour=19, minute=0, second=0, microsecond=0)
+    while hora_inicio <= hora_fin:
+        horarios_disponibles.append(hora_inicio)
+        hora_inicio += timedelta(minutes=20)
+
+    # Obtiene las citas agendadas para la fecha específica
+    fecha_inicio = fecha.replace(hour=0, minute=0, second=0, microsecond=0)
+    fecha_fin = fecha.replace(hour=23, minute=59, second=59, microsecond=999999)
+    registros = citas_collection.find({"fecha_hora": {"$gte": fecha_inicio, "$lte": fecha_fin}})
+
+    # Marca los horarios que ya están agendados
+    horarios_agendados = {registro["fecha_hora"] for registro in registros}
+    disponibilidad = [horario for horario in horarios_disponibles if horario not in horarios_agendados]
     return disponibilidad
 
-def get_cita_by_id(fecha: datetime, id_cita: str) -> CitaResponse:
-    """Obtiene una cita específica por su ID en una fecha dada."""
-    hoja = obtener_hoja_del_dia(fecha)
-    registros = hoja.get_all_records()
-    
-    for registro in registros:
-        if registro["id_cita"] == id_cita:
-            return CitaResponse(
-                id_cita=id_cita,
-                nombre_mascota=registro["nombre_mascota"],
-                nombre_dueño=registro["nombre_dueño"],
-                correo=registro["correo"],
-                telefono=registro["telefono"],
-                fecha_hora=datetime.strptime(registro["fecha_hora"], '%Y-%m-%d %H:%M:%S'),
-                medico=registro["medico"],
-                estado=registro["estado"],
-                cedula=registro["cedula"]
-            )
-    return None
+def get_cita_by_id(id_cita: str) -> CitaResponse:
+    """Obtiene una cita específica por su ID."""
+    cita = citas_collection.find_one({"_id": ObjectId(id_cita)})
+    if cita:
+        cita["id"] = str(cita["_id"])
+        return CitaResponse(**cita)
+    else:
+        raise Exception("Cita no encontrada")
+
 def get_citas_by_contacto(correo: str, fecha_inicio: datetime) -> list[CitaResponse]:
     """Obtiene todas las citas de un contacto desde una fecha específica hacia adelante."""
     citas = []
-    fecha_actual = fecha_inicio
-
-    while True:
-        hoja = obtener_hoja_del_dia(fecha_actual)
-        registros = hoja.get_all_records()
-        print(f"Procesando registros para la fecha: {fecha_actual}")
-
-        for registro in registros:
-            print(f"Registro: {registro}")
-            fecha_hora = datetime.strptime(registro["fecha_hora"], '%Y-%m-%d %H:%M:%S')
-            if "correo" in registro and registro["correo"] == correo and fecha_hora >= fecha_inicio:
-                citas.append(CitaResponse(
-                    id_cita=int(registro["id_cita"]),
-                    nombre_mascota=registro["nombre_mascota"],
-                    nombre_dueño=registro["nombre_dueño"],
-                    correo=registro["correo"],
-                    telefono=str(registro["telefono"]),
-                    fecha_hora=fecha_hora,
-                    medico=registro["medico"],
-                    estado=registro["estado"],
-                    cedula=str(registro["cedula"])
-                ))
-
-        # Avanza al siguiente día
-        fecha_actual += timedelta(days=1)
-        if fecha_actual > datetime.now() + timedelta(days=30):  # Limita la búsqueda a un año
-            break
-
+    query = {
+        "correo": correo,
+        "fecha_hora": {"$gte": fecha_inicio}
+    }
+    for cita in citas_collection.find(query):
+        cita["id"] = str(cita["_id"])
+        citas.append(CitaResponse(**cita))
     return citas

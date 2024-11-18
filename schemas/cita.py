@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
+from bson import ObjectId
 
 class CitaCreate(BaseModel):
     nombre_mascota: str = Field(..., example="Firulais")
@@ -11,12 +12,18 @@ class CitaCreate(BaseModel):
     cedula: str = Field(..., example="123456789")
 
 class CitaResponse(BaseModel):
-    id_cita: int
+    id: str
     nombre_mascota: str
     nombre_dueño: str
     correo: str
     telefono: str
     fecha_hora: datetime
     medico: str
-    estado: str = Field(..., example="confirmada")
-    cedula: str = Field(..., example="123456789")
+    estado: str
+    cedula: str
+
+    class Config:
+        orm_mode = True
+        json_encoders = {
+            ObjectId: str
+        }
