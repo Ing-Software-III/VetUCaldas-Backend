@@ -8,7 +8,6 @@ class CitaCreate(BaseModel):
     correo: str = Field(..., example="juan.perez@gmail.com")
     telefono: str = Field(..., example="1234567890")
     fecha_hora: datetime = Field(..., example="2024-12-01T10:30:00")
-    medico: str = Field(..., example="Dra. María López")
     cedula: str = Field(..., example="123456789")
 
 class CitaResponse(BaseModel):
@@ -18,7 +17,6 @@ class CitaResponse(BaseModel):
     correo: str
     telefono: str
     fecha_hora: datetime
-    medico: str
     estado: str
     cedula: str
 
