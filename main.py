@@ -1,8 +1,17 @@
 from fastapi import FastAPI
 from core.config import citas_collection
 from api.endpoints import citas
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permitir todas las solicitudes de origen cruzado
+    allow_credentials=True,
+    allow_methods=["*"],  # Permitir todos los métodos HTTP (GET, POST, etc.)
+    allow_headers=["*"],  # Permitir todos los encabezados
+)
 
 @app.get("/")
 async def root():
